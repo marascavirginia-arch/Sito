@@ -152,9 +152,10 @@ a { color: inherit; text-decoration: none; }
 .brand-mark {
   height: 34px;
   width: auto;
-  object-fit: contain;
   flex-shrink: 0;
+  color: var(--navy-900);
 }
+.brand-footer .brand-mark { color: var(--gold); }
 .brand-name {
   font-family: var(--font-serif);
   font-size: 1.25rem;
