@@ -55,10 +55,11 @@
       title: "Consulenza Online",
       price: config.onlineConsultationPrice ? "€ " + config.onlineConsultationPrice : "",
       features: [
-        "Consulenza in videochiamata su Microsoft Teams",
-        "Calendario con le disponibilità reali",
+        "Consulenza da remoto, in videochiamata",
+        "45 minuti per un primo orientamento su un quesito specifico",
         "Pagamento sicuro con carta di credito",
       ],
+      note: "Questa consulenza è pensata per fornire chiarimenti e un primo orientamento legale. Non comprende la presa in carico della pratica: un'eventuale prosecuzione viene valutata solo in un secondo momento, se lo riterrai utile.",
       url: config.onlineConsultationUrl,
       cta: "Scegli data e ora",
     },
@@ -70,6 +71,7 @@
         "Calendario con le disponibilità reali",
         "Data, ora e dettagli confermati via email",
       ],
+      note: "Un momento utile per esaminare con calma la tua situazione, anche con eventuale documentazione: il passaggio più indicato se stai valutando di affidarmi la pratica.",
       url: config.inPersonConsultationUrl,
       cta: "Scegli data e ora",
     },
@@ -90,6 +92,7 @@
       html += "<li>" + f + "</li>";
     });
     html += "</ul>";
+    if (data.note) html += '<p class="modal-scope">' + data.note + "</p>";
 
     if (isConfigured) {
       html +=
