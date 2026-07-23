@@ -104,25 +104,25 @@ a { color: inherit; text-decoration: none; }
   background: var(--navy-900);
   color: var(--white);
 }
-.btn-primary:hover { background: var(--navy-800); }
+.btn-primary:hover { background: var(--navy-800); transform: translateY(-1px); }
 .btn-ghost {
   background: transparent;
   color: var(--navy-900);
   border-color: var(--navy-900);
 }
-.btn-ghost:hover { background: var(--navy-900); color: var(--white); }
+.btn-ghost:hover { background: var(--navy-900); color: var(--white); transform: translateY(-1px); }
 .btn-outline {
   background: transparent;
   color: var(--white);
   border-color: rgba(255,255,255,0.4);
 }
-.btn-outline:hover { background: rgba(255,255,255,0.1); border-color: var(--white); }
+.btn-outline:hover { background: rgba(255,255,255,0.1); border-color: var(--white); transform: translateY(-1px); }
 .btn-sm { padding: 10px 20px; font-size: 0.85rem; }
 .btn-gold {
   background: var(--gold);
   color: var(--navy-950);
 }
-.btn-gold:hover { background: var(--gold-light); }
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
 
 /* ---------- Header ---------- */
 .site-header {
@@ -310,12 +310,17 @@ a { color: inherit; text-decoration: none; }
 }
 .card-icon {
   display: inline-flex;
-  width: 48px;
-  height: 48px;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(176, 141, 87, 0.1);
   color: var(--gold);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
 }
-.card-icon svg { width: 100%; height: 100%; }
+.card-icon svg { width: 26px; height: 26px; }
 .card p { font-size: 0.94rem; margin-bottom: 0; }
 
 /* ---------- Method ---------- */
@@ -350,14 +355,24 @@ a { color: inherit; text-decoration: none; }
   gap: 28px;
 }
 .booking-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: var(--radius);
   padding: 40px 34px;
+  transition: var(--transition);
+}
+.booking-card:hover {
+  border-color: rgba(203, 168, 106, 0.45);
+  background: rgba(255,255,255,0.05);
+  transform: translateY(-4px);
 }
 .booking-card h3 { color: var(--white); }
-.booking-card p { color: var(--silver); font-size: 0.96rem; }
-.booking-card .card-icon { color: var(--gold-light); }
+.booking-card p { color: var(--silver); font-size: 0.96rem; flex-grow: 1; }
+.booking-card .card-icon { background: rgba(203, 168, 106, 0.14); color: var(--gold-light); }
+.booking-card .btn { align-self: flex-start; }
 
 /* ---------- Contact ---------- */
 .contact-grid {
@@ -377,8 +392,9 @@ a { color: inherit; text-decoration: none; }
   background: var(--white);
   transition: var(--transition);
 }
-.contact-link:hover { border-color: var(--gold); box-shadow: var(--shadow-soft); }
-.contact-link .card-icon { width: 30px; height: 30px; margin: 0; flex-shrink: 0; }
+.contact-link:hover { border-color: var(--gold); box-shadow: var(--shadow-soft); transform: translateY(-2px); }
+.contact-link .card-icon { width: 44px; height: 44px; margin: 0; }
+.contact-link .card-icon svg { width: 20px; height: 20px; }
 .contact-link strong {
   display: block;
   font-size: 0.75rem;
