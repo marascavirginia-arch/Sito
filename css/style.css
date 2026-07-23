@@ -289,6 +289,8 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
 }
 .about-photo {
+  width: 100%;
+  max-width: 320px;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
@@ -365,7 +367,7 @@ a { color: inherit; text-decoration: none; }
 .method-photo {
   display: block;
   width: 100%;
-  max-width: 240px;
+  max-width: 320px;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: var(--radius);
@@ -398,7 +400,7 @@ a { color: inherit; text-decoration: none; }
 .path-photo {
   display: block;
   width: 100%;
-  max-width: 240px;
+  max-width: 320px;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: var(--radius);
@@ -749,7 +751,7 @@ a { color: inherit; text-decoration: none; }
   }
 
   .about-grid, .path-grid, .contact-grid, .method-layout { grid-template-columns: 1fr; gap: 44px; }
-  .about-photo, .method-photo { max-width: 420px; margin-left: auto; margin-right: auto; }
+  .about-photo, .method-photo, .path-photo { margin-left: auto; margin-right: auto; }
   .card { flex-basis: calc((100% - 28px) / 2); }
   .method-grid { grid-template-columns: repeat(2, 1fr); }
   .booking-grid { grid-template-columns: 1fr; }
