@@ -71,7 +71,7 @@
         "Analisi della fattispecie e impostazione della strategia legale",
         "Calendario con le disponibilità reali",
       ],
-      note: "Un momento dedicato all'analisi della fattispecie e alla definizione della strategia più adatta, anche alla luce di eventuale documentazione: il passaggio più indicato se stai valutando di affidarmi la pratica.",
+      note: "Un momento dedicato all'analisi della fattispecie e alla definizione della strategia più adatta, anche alla luce di eventuale documentazione.",
       url: config.inPersonConsultationUrl,
       cta: "Scegli data e ora",
     },
