@@ -250,29 +250,10 @@ a { color: inherit; text-decoration: none; }
   color: var(--white);
   margin-bottom: 0.7em;
 }
-.hero-practices {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1.6em;
-}
-.hero-practices li {
-  font-family: var(--font-sans);
-  font-size: 0.76rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--gold-light);
-  padding: 8px 15px;
-  border: 1px solid rgba(203, 168, 106, 0.35);
-  border-radius: 999px;
-}
 .hero-approach {
   font-size: 1.05rem;
   color: var(--silver);
-  max-width: 480px;
+  max-width: 560px;
   margin-bottom: 2.2em;
 }
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
