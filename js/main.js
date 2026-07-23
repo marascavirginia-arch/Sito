@@ -102,8 +102,19 @@
     return ALL_TIMES.filter(function (t, i) { return (i + index) % 4 !== 0; });
   }
 
+  var AMBITI = [
+    "Diritto Civile",
+    "Successioni",
+    "Contrattualistica",
+    "Diritto Societario",
+    "Diritto Immobiliare",
+    "Diritto di Famiglia",
+    "Responsabilità Medica",
+    "Diritto Tributario",
+  ];
+
   /* ---------- Modal state machine ---------- */
-  var state = { type: null, step: "info", slotLabel: null };
+  var state = { type: null, step: "info", slotLabel: null, details: null };
 
   function renderInfoStep(data) {
     var isConfigured = data.url && data.url !== "#";
@@ -130,6 +141,36 @@
     return html;
   }
 
+  function renderDetailsStep(data) {
+    var d = state.details || {};
+    var html = "";
+    html += '<p class="eyebrow">' + data.title + " · Anteprima</p>";
+    html += "<h2>Raccontami la tua richiesta</h2>";
+    html += '<p class="modal-scope">Qualche informazione in più mi permette di prepararmi prima dell\'incontro. Tutti i campi sono facoltativi tranne l\'ambito.</p>';
+    html += '<form id="details-form">';
+    html += '<div class="detail-form">';
+
+    html += '<label>Ambito della consulenza<select name="ambito" required>';
+    html += '<option value="" disabled' + (d.ambito ? "" : " selected") + ">Seleziona un ambito</option>";
+    AMBITI.forEach(function (a) {
+      html += "<option" + (d.ambito === a ? " selected" : "") + ">" + a + "</option>";
+    });
+    html += "</select></label>";
+
+    html +=
+      '<label>Di cosa si tratta<textarea name="message" rows="4" placeholder="Descrivi brevemente il tema o la problematica da affrontare">' +
+      (d.message ? d.message : "") + "</textarea></label>";
+
+    html += '<label>Documentazione (facoltativa)<input type="file" name="files" multiple />';
+    html += '<span class="field-hint">Puoi allegare documenti preparatori per l\'incontro, se utile: verranno consegnati alla conferma della prenotazione.</span></label>';
+
+    html += "</div>";
+    html += '<button type="submit" class="btn btn-primary" style="width:100%">Continua</button>';
+    html += "</form>";
+    html += '<div class="modal-actions"><button type="button" class="btn btn-ghost" style="width:100%" data-action="back">Indietro</button></div>';
+    return html;
+  }
+
   function renderSlotsStep(data) {
     var html = "";
     html += '<p class="eyebrow">' + data.title + " · Anteprima</p>";
@@ -151,11 +192,30 @@
     return html;
   }
 
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function renderRequestSummary() {
+    var d = state.details;
+    if (!d || !d.ambito) return "";
+    var html = '<p class="modal-summary"><strong>' + escapeHtml(d.ambito) + "</strong>";
+    if (d.message) html += escapeHtml(d.message);
+    if (d.fileNames && d.fileNames.length) {
+      html += (d.message ? "<br />" : "") + "Allegati: " + escapeHtml(d.fileNames.join(", "));
+    }
+    html += "</p>";
+    return html;
+  }
+
   function renderPaymentStep(data) {
     var html = "";
     html += '<p class="eyebrow">' + data.title + " · Anteprima</p>";
     html += "<h2>Pagamento</h2>";
     html += '<p class="modal-summary"><strong>' + state.slotLabel + "</strong>Videochiamata da remoto</p>";
+    html += renderRequestSummary();
     if (data.price) html += '<p class="modal-price">' + data.price + "</p>";
     html += '<div class="pay-form">';
     html += '<label>Titolare della carta<input type="text" placeholder="Nome e Cognome" /></label>';
@@ -174,6 +234,7 @@
     html += '<p class="eyebrow">Anteprima</p>';
     html += "<h2>Prenotazione simulata</h2>";
     html += '<p class="modal-summary"><strong>' + data.title + "</strong>" + state.slotLabel + "</p>";
+    html += renderRequestSummary();
     html += '<p class="modal-scope">' + data.note + "</p>";
     html +=
       '<p class="modal-note">Questa è una simulazione: non è stata creata nessuna prenotazione reale e non è stato effettuato alcun pagamento. Per fissare davvero un appuntamento, scrivimi o chiamami al +39 366 340 1088.</p>';
@@ -185,7 +246,8 @@
     var data = content[state.type];
     if (!data) return;
     var html;
-    if (state.step === "slots") html = renderSlotsStep(data);
+    if (state.step === "details") html = renderDetailsStep(data);
+    else if (state.step === "slots") html = renderSlotsStep(data);
     else if (state.step === "payment") html = renderPaymentStep(data);
     else if (state.step === "confirm") html = renderConfirmStep(data);
     else html = renderInfoStep(data);
@@ -194,7 +256,7 @@
 
   function openModal(type) {
     if (!content[type]) return;
-    state = { type: type, step: "info", slotLabel: null };
+    state = { type: type, step: "info", slotLabel: null, details: null };
     render();
     overlay.classList.add("is-open");
     overlay.setAttribute("aria-hidden", "false");
@@ -208,13 +270,15 @@
     document.body.style.overflow = "";
   }
 
+  var BACK_MAP = { details: "info", slots: "details", payment: "slots" };
+
   modalBody.addEventListener("click", function (e) {
     var el = e.target.closest("[data-action]");
     if (!el) return;
     var action = el.getAttribute("data-action");
 
     if (action === "start-sim") {
-      state.step = "slots";
+      state.step = "details";
       render();
     } else if (action === "pick-slot") {
       state.slotLabel = el.getAttribute("data-label");
@@ -224,11 +288,27 @@
       state.step = "confirm";
       render();
     } else if (action === "back") {
-      state.step = state.step === "payment" ? "slots" : "info";
+      state.step = BACK_MAP[state.step] || "info";
       render();
     } else if (action === "close") {
       closeModal();
     }
+  });
+
+  modalBody.addEventListener("submit", function (e) {
+    var form = e.target.closest("#details-form");
+    if (!form) return;
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+
+    var fileInput = form.querySelector('input[name="files"]');
+    state.details = {
+      ambito: form.querySelector('select[name="ambito"]').value,
+      message: form.querySelector('textarea[name="message"]').value.trim(),
+      fileNames: fileInput.files ? Array.prototype.map.call(fileInput.files, function (f) { return f.name; }) : [],
+    };
+    state.step = "slots";
+    render();
   });
 
   document.querySelectorAll("[data-open-booking]").forEach(function (btn) {

@@ -315,11 +315,14 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- Cards / grids ---------- */
 .cards-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 28px;
 }
 .card {
+  flex: 0 1 calc((100% - 84px) / 4);
+  min-width: 230px;
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -612,6 +615,66 @@ a { color: inherit; text-decoration: none; }
 .pay-form input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
 .pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+.detail-form { display: flex; flex-direction: column; gap: 18px; margin-bottom: 20px; }
+.detail-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.detail-form select,
+.detail-form textarea {
+  font-family: var(--font-sans);
+  font-size: 0.98rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--ink);
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  resize: vertical;
+}
+.detail-form select:focus,
+.detail-form textarea:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.detail-form input[type="file"] {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--ink-soft);
+}
+.detail-form input[type="file"]::file-selector-button {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy-900);
+  background: var(--ivory-warm);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.detail-form input[type="file"]::file-selector-button:hover { border-color: var(--gold); }
+.field-hint {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--ink-soft);
+  opacity: 0.85;
+}
+
 .confirm-check {
   width: 52px;
   height: 52px;
@@ -655,7 +718,7 @@ a { color: inherit; text-decoration: none; }
 
   .about-grid, .path-grid, .contact-grid { grid-template-columns: 1fr; gap: 44px; }
   .about-photo { max-width: 420px; }
-  .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .card { flex-basis: calc((100% - 28px) / 2); }
   .method-grid { grid-template-columns: repeat(2, 1fr); }
   .booking-grid { grid-template-columns: 1fr; }
 }
@@ -663,7 +726,7 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 560px) {
   .section { padding: 76px 0; }
   .hero { padding: 150px 0 90px; }
-  .cards-grid { grid-template-columns: 1fr; }
+  .card { flex-basis: 100%; }
   .method-grid { grid-template-columns: 1fr; }
   .header-actions { gap: 8px; }
   .modal { padding: 32px 24px; }
