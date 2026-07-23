@@ -271,7 +271,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ---------- Sections ---------- */
-.section { padding: 110px 0; }
+.section { padding: 150px 0; }
 .section-alt { background: var(--ivory-warm); }
 .section-dark { background: var(--navy-950); }
 .section-dark h2, .section-dark h3 { color: var(--white); }
@@ -736,18 +736,21 @@ a { color: inherit; text-decoration: none; }
   }
 
   .about-grid, .path-grid, .contact-grid { grid-template-columns: 1fr; gap: 44px; }
-  .about-photo { max-width: 420px; }
+  .about-photo { max-width: 420px; margin: 0 auto; justify-content: center; }
   .card { flex-basis: calc((100% - 28px) / 2); }
   .method-grid { grid-template-columns: repeat(2, 1fr); }
   .booking-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {
-  .section { padding: 76px 0; }
-  .hero { padding: 150px 0 90px; }
+  .section { padding: 100px 0; }
+  .hero { padding: 150px 0 110px; }
   .card { flex-basis: 100%; }
   .method-grid { grid-template-columns: 1fr; }
   .header-actions { gap: 8px; }
   .modal { padding: 32px 24px; }
 
+  .about-photo { gap: 20px; }
+  .about-photo img { flex: 0 0 140px; }
+  .about-photo img:last-child { margin-top: 40px; }
 }
