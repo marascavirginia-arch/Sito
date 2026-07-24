@@ -360,9 +360,9 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Method ---------- */
 .method-layout {
   display: grid;
-  grid-template-columns: 0.9fr 1.4fr;
+  grid-template-columns: 1.15fr 0.85fr;
   gap: 80px;
-  align-items: start;
+  align-items: center;
 }
 .method-photo {
   display: block;
@@ -372,12 +372,13 @@ a { color: inherit; text-decoration: none; }
   object-fit: cover;
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
-  margin-top: 32px;
+  margin: 0 auto;
 }
 .method-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 40px;
+  margin-top: 40px;
 }
 .method-num {
   display: block;
@@ -392,9 +393,9 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Path / Percorso ---------- */
 .path-grid {
   display: grid;
-  grid-template-columns: 0.9fr 1.4fr;
+  grid-template-columns: 0.85fr 1.15fr;
   gap: 80px;
-  align-items: start;
+  align-items: center;
 }
 .path-text p { font-size: 1.02rem; }
 .path-photo {
@@ -405,7 +406,7 @@ a { color: inherit; text-decoration: none; }
   object-fit: cover;
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
-  margin-top: 32px;
+  margin: 0 auto;
 }
 
 /* ---------- Booking ---------- */
