@@ -80,8 +80,6 @@ body {
 }
 .app-header-inner { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 .app-header h1 { font-family: var(--font-serif); font-weight: 500; font-size: 1.7rem; margin: 0; }
-.app-back { color: var(--silver); text-decoration: none; font-size: 0.85rem; }
-.app-back:hover { color: var(--gold-light); }
 .app-subtitle { color: var(--silver); font-size: 0.9rem; }
 
 main.app-container { padding: 28px 20px 60px; }
