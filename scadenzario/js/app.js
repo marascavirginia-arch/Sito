@@ -28,9 +28,12 @@
   const elNascondiFatte = document.getElementById("f-nascondi-fatte");
   const elRiepilogoBody = document.getElementById("riepilogo-body");
   const elRiepilogoEmpty = document.getElementById("riepilogo-empty");
+  const elRegistroBody = document.getElementById("registro-body");
+  const elRegistroEmpty = document.getElementById("registro-empty");
   const elGoogleStatus = document.getElementById("google-status");
 
   let currentPreviewItems = null;
+  const noteSaveTimers = {};
 
   // ---------------------------------------------------------------
   // Popolamento select Rito / Sottotipo
@@ -302,6 +305,11 @@
         </div>
         <div class="pratica-body" id="body-${pratica.id}">
           <ul class="deadline-list">${renderDeadlineItems(items, { pratica, editable: true })}</ul>
+          <div class="pratica-notes">
+            <label for="note-${pratica.id}">Note personalizzate</label>
+            <textarea id="note-${pratica.id}" data-note-pratica="${pratica.id}" placeholder="Es. in attesa di documenti dal cliente; verificare con controparte entro venerdì…">${escapeHTML(pratica.note || "")}</textarea>
+            <p class="note-status" data-note-status="${pratica.id}"></p>
+          </div>
           <div class="pratica-actions">
             <button type="button" class="btn btn-outline btn-sm" data-export-ics="${pratica.id}">Esporta .ics</button>
             <button type="button" class="btn btn-outline btn-sm" data-sync-google="${pratica.id}">Sincronizza con Google Calendar</button>
@@ -316,6 +324,7 @@
   function renderAll() {
     renderPratiche();
     renderRiepilogo();
+    renderRegistro();
   }
 
   function toggleDone(praticaId, label, checked) {
@@ -377,6 +386,102 @@
       })
       .join("");
   }
+
+  // ---------------------------------------------------------------
+  // Registro clienti: un cliente per riga, con le info principali di
+  // tutte le sue pratiche.
+  // ---------------------------------------------------------------
+  function renderRegistro() {
+    const all = Store.loadAll();
+    const today = DU.toDate(new Date());
+    const soonThreshold = DU.addDays(today, 7);
+
+    const gruppi = new Map();
+    all.forEach((pratica) => {
+      const chiave = (pratica.cliente || "").trim() || "(senza nome)";
+      if (!gruppi.has(chiave)) gruppi.set(chiave, []);
+      gruppi.get(chiave).push(pratica);
+    });
+
+    const righe = Array.from(gruppi.entries()).map(([cliente, pratiche]) => {
+      const ritiLabels = new Set();
+      const note = [];
+      let prossima = null;
+
+      pratiche.forEach((pratica) => {
+        const rito = RITI[pratica.ritoKey];
+        if (rito) ritiLabels.add(rito.label);
+        if ((pratica.note || "").trim()) note.push({ oggetto: pratica.oggetto || "Pratica", testo: pratica.note.trim() });
+
+        const items = computeItemsForPratica(pratica);
+        const pending = items.filter((it) => !(pratica.completate && pratica.completate[it.label]));
+        const next = pending.find((it) => it.date >= today) || pending[0];
+        if (next && (!prossima || next.date < prossima.item.date)) prossima = { item: next, overdue: next.date < today };
+      });
+
+      return { cliente, pratiche, ritiLabels: Array.from(ritiLabels), note, prossima };
+    });
+
+    righe.sort((a, b) => {
+      if (!a.prossima && !b.prossima) return a.cliente.localeCompare(b.cliente);
+      if (!a.prossima) return 1;
+      if (!b.prossima) return -1;
+      return a.prossima.item.date - b.prossima.item.date;
+    });
+
+    elRegistroEmpty.hidden = righe.length > 0;
+    elRegistroBody.innerHTML = righe
+      .map(({ cliente, pratiche, ritiLabels, note, prossima }) => {
+        let nextClass = "";
+        let nextText = "Nessuna scadenza calcolabile";
+        if (prossima) {
+          nextClass = prossima.overdue ? "overdue" : prossima.item.date <= soonThreshold ? "soon" : "";
+          nextText = `${prossima.overdue ? "Scaduta" : ""}${prossima.overdue ? " · " : ""}${prossima.item.label} — ${DU.formatItShort(prossima.item.date)}`;
+        }
+        const oggetti = pratiche.map((p) => escapeHTML(p.oggetto || "Pratica senza oggetto")).join(", ");
+        const noteHTML = note.length
+          ? note.map((n) => `<div><span class="rg-note-oggetto">${escapeHTML(n.oggetto)}:</span> ${escapeHTML(n.testo)}</div>`).join("")
+          : `<span class="rg-note-empty">Nessuna nota</span>`;
+        return `
+        <tr data-cliente="${escapeHTML(cliente)}">
+          <td class="rg-cliente">${escapeHTML(cliente)}</td>
+          <td><span class="rg-count">${pratiche.length} pratic${pratiche.length === 1 ? "a" : "he"}</span><div class="rp-oggetto">${oggetti}</div></td>
+          <td class="rg-rito">${escapeHTML(ritiLabels.join(", ") || "—")}</td>
+          <td class="rg-next ${nextClass}">${escapeHTML(nextText)}</td>
+          <td class="rg-note">${noteHTML}</td>
+        </tr>`;
+      })
+      .join("");
+  }
+
+  elRegistroBody.addEventListener("click", (e) => {
+    const row = e.target.closest("tr[data-cliente]");
+    if (!row) return;
+    elSearch.value = row.dataset.cliente;
+    renderAll();
+    const praticheSection = document.getElementById("pratiche-list");
+    if (praticheSection) praticheSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  elPraticheList.addEventListener("input", (e) => {
+    const textarea = e.target.closest("[data-note-pratica]");
+    if (!textarea) return;
+    const praticaId = textarea.dataset.notePratica;
+    const statusEl = elPraticheList.querySelector(`[data-note-status="${praticaId}"]`);
+    if (statusEl) {
+      statusEl.textContent = "Scrittura…";
+      statusEl.classList.remove("saved");
+    }
+    clearTimeout(noteSaveTimers[praticaId]);
+    noteSaveTimers[praticaId] = setTimeout(() => {
+      Store.update(praticaId, { note: textarea.value });
+      if (statusEl) {
+        statusEl.textContent = "Nota salvata.";
+        statusEl.classList.add("saved");
+      }
+      renderRegistro();
+    }, 500);
+  });
 
   elRiepilogoBody.addEventListener("change", (e) => {
     const toggle = e.target.closest("[data-toggle-done]");

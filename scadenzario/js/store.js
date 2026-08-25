@@ -39,6 +39,7 @@
         id: uid(),
         creatoIl: new Date().toISOString(),
         completate: {}, // { deadlineLabel: true }
+        note: "",
       },
       pratica
     );

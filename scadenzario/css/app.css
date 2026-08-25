@@ -172,10 +172,11 @@ input[type="checkbox"] { width: 18px; height: 18px; }
 .filter-check { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; }
 
 .table-scroll { overflow-x: auto; }
-.riepilogo-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-.riepilogo-table th, .riepilogo-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-.riepilogo-table thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); font-weight: 600; border-bottom: 2px solid var(--line); white-space: nowrap; }
-.riepilogo-table tbody tr:hover { background: var(--ivory-warm); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.data-table th, .data-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.data-table thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); font-weight: 600; border-bottom: 2px solid var(--line); white-space: nowrap; }
+.data-table tbody tr:hover { background: var(--ivory-warm); }
+
 .riepilogo-table .rp-date { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .riepilogo-table .rp-oggetto { color: var(--ink-soft); font-size: 0.82rem; }
 .riepilogo-table .rp-art { color: var(--ink-soft); font-size: 0.78rem; margin-top: 2px; }
@@ -186,6 +187,17 @@ input[type="checkbox"] { width: 18px; height: 18px; }
 .riepilogo-table tr.soon { background: var(--warn-bg); }
 .riepilogo-table tr.done { opacity: 0.5; }
 .riepilogo-table tr.done .rp-label { text-decoration: line-through; }
+
+#registro-table tbody tr { cursor: pointer; }
+.rg-cliente { font-family: var(--font-serif); font-weight: 600; font-size: 1.05rem; }
+.rg-count { color: var(--ink-soft); font-size: 0.82rem; white-space: nowrap; }
+.rg-rito { font-size: 0.82rem; }
+.rg-next { font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+.rg-next.overdue { color: var(--danger); }
+.rg-next.soon { color: var(--warn); }
+.rg-note { color: var(--ink-soft); font-size: 0.82rem; max-width: 320px; white-space: pre-line; }
+.rg-note .rg-note-oggetto { font-weight: 600; color: var(--ink); }
+.rg-note-empty { font-style: italic; opacity: 0.7; }
 
 .pratiche-list { display: flex; flex-direction: column; gap: 14px; }
 .empty-state { color: var(--ink-soft); font-style: italic; }
@@ -200,6 +212,24 @@ input[type="checkbox"] { width: 18px; height: 18px; }
 .pratica-body { padding: 14px 16px 18px; border-top: 1px solid var(--line); display: none; }
 .pratica-body.open { display: block; }
 .pratica-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+.pratica-notes { margin-top: 18px; }
+.pratica-notes label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
+.pratica-notes textarea {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ivory-warm);
+  color: var(--ink);
+}
+.pratica-notes textarea:focus { outline: 2px solid var(--gold-light); outline-offset: 1px; }
+.note-status { font-size: 0.76rem; color: var(--ink-soft); margin-top: 4px; min-height: 1em; }
+.note-status.saved { color: var(--ok); }
 
 @media (max-width: 600px) {
   .deadline-item { grid-template-columns: 1fr; }

@@ -91,6 +91,28 @@
     <p class="google-status" id="google-status"></p>
   </section>
 
+  <!-- REGISTRO CLIENTI -->
+  <section class="panel">
+    <div class="panel-head-row">
+      <h2>Registro clienti</h2>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table" id="registro-table">
+        <thead>
+          <tr>
+            <th scope="col">Cliente</th>
+            <th scope="col">Pratiche</th>
+            <th scope="col">Rito</th>
+            <th scope="col">Prossima scadenza</th>
+            <th scope="col">Note</th>
+          </tr>
+        </thead>
+        <tbody id="registro-body"></tbody>
+      </table>
+    </div>
+    <p class="empty-state" id="registro-empty" hidden>Nessun cliente ancora censito: aggiungi una pratica qui sopra.</p>
+  </section>
+
   <!-- RIEPILOGO SCADENZE -->
   <section class="panel">
     <div class="panel-head-row">
@@ -101,7 +123,7 @@
       </div>
     </div>
     <div class="table-scroll">
-      <table class="riepilogo-table" id="riepilogo-table">
+      <table class="data-table riepilogo-table" id="riepilogo-table">
         <thead>
           <tr>
             <th scope="col">Data</th>
