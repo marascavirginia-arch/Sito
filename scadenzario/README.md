@@ -73,8 +73,10 @@ in Google Calendar:
 3. Tutte le scadenze vengono create in un solo passaggio. Per ogni
    scadenza viene creato anche un evento promemoria a sé, visibile
    direttamente nel calendario, a **10, 5 e 3 giorni prima** (non un
-   avviso pop-up: proprio una voce che compare quel giorno, con scritto
-   "Tra N giorni scade: ...").
+   avviso pop-up: proprio una voce che compare quel giorno). Sia
+   l'evento vero sia i tre promemoria hanno lo stesso titolo, con
+   scritto sempre la data effettiva di scadenza, es.:
+   `Il 15/09/2026 scade "Costituzione in giudizio" — pratica Rossi`.
 
 ### 2. Sincronizzazione diretta con un click (opzionale)
 

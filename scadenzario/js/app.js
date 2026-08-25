@@ -521,7 +521,8 @@
       const items = computeItemsForPratica(pratica);
       const events = items.map((it) => ({
         uid: `${pratica.id}_${slug(it.label)}`,
-        title: `[${pratica.cliente}] ${it.label}`,
+        cliente: pratica.cliente,
+        label: it.label,
         date: it.date,
         description: [it.art, it.note].filter(Boolean).join(" — "),
       }));
@@ -635,7 +636,9 @@
     }
     const items = computeItemsForPratica(pratica);
     const events = items.map((it) => ({
-      title: `[${pratica.cliente}] ${it.label}`,
+      uid: `${pratica.id}_${slug(it.label)}`,
+      cliente: pratica.cliente,
+      label: it.label,
       date: it.date,
       description: [it.art, it.note].filter(Boolean).join(" — "),
     }));
@@ -671,7 +674,8 @@
       computeItemsForPratica(pratica).forEach((it) => {
         events.push({
           uid: `${pratica.id}_${slug(it.label)}`,
-          title: `[${pratica.cliente}] ${it.label}`,
+          cliente: pratica.cliente,
+          label: it.label,
           date: it.date,
           description: [it.art, it.note].filter(Boolean).join(" — "),
         });
@@ -690,7 +694,9 @@
     all.forEach((pratica) => {
       computeItemsForPratica(pratica).forEach((it) => {
         events.push({
-          title: `[${pratica.cliente}] ${it.label}`,
+          uid: `${pratica.id}_${slug(it.label)}`,
+          cliente: pratica.cliente,
+          label: it.label,
           date: it.date,
           description: [it.art, it.note].filter(Boolean).join(" — "),
         });

@@ -22,21 +22,31 @@
   const REMINDER_DAYS_BEFORE = [10, 5, 3];
 
   /**
+   * Titolo unico per l'evento vero e per tutti i suoi promemoria: dice
+   * sempre la data effettiva di scadenza, non la data del promemoria.
+   */
+  function formatEventTitle(cliente, label, dueDate) {
+    return `Il ${DU.formatItShort(dueDate)} scade "${label}" — pratica ${cliente}`;
+  }
+
+  /**
    * Espande ogni scadenza in più eventi: quello vero, sulla data
    * effettiva, più un evento promemoria per ciascun valore di
-   * REMINDER_DAYS_BEFORE, collocato quei giorni prima.
-   * @param {Array} events - [{ uid, title, date, description }]
+   * REMINDER_DAYS_BEFORE, collocato quei giorni prima. Tutti condividono
+   * lo stesso titolo (con la data vera di scadenza).
+   * @param {Array} events - [{ uid, cliente, label, date, description }]
    */
   function withReminderEntries(events) {
     const expanded = [];
     events.forEach((ev) => {
-      expanded.push(ev);
+      const title = formatEventTitle(ev.cliente, ev.label, ev.date);
+      expanded.push({ ...ev, title });
       REMINDER_DAYS_BEFORE.forEach((days) => {
         expanded.push({
           uid: `${ev.uid}_rem${days}`,
-          title: `Tra ${days} giorni scade: ${ev.title}`,
+          title,
           date: DU.addDays(ev.date, -days),
-          description: `Scade il ${DU.formatItShort(ev.date)}.${ev.description ? " " + ev.description : ""}`,
+          description: `Promemoria: mancano ${days} giorni.${ev.description ? " " + ev.description : ""}`,
         });
       });
     });
@@ -159,5 +169,6 @@
     downloadICS,
     isConfigured,
     pushEventsToGoogleCalendar,
+    formatEventTitle,
   };
 })(window);
