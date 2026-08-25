@@ -17,8 +17,31 @@
   "use strict";
   const DU = global.DateUtils;
 
-  // Promemoria pop-up: quanti giorni prima di ogni scadenza avvisare.
-  const REMINDER_DAYS_BEFORE = [20, 10, 5];
+  // Promemoria: invece di un avviso pop-up, per ogni scadenza si crea
+  // un evento visibile a sé nel calendario, questi giorni prima.
+  const REMINDER_DAYS_BEFORE = [10, 5, 3];
+
+  /**
+   * Espande ogni scadenza in più eventi: quello vero, sulla data
+   * effettiva, più un evento promemoria per ciascun valore di
+   * REMINDER_DAYS_BEFORE, collocato quei giorni prima.
+   * @param {Array} events - [{ uid, title, date, description }]
+   */
+  function withReminderEntries(events) {
+    const expanded = [];
+    events.forEach((ev) => {
+      expanded.push(ev);
+      REMINDER_DAYS_BEFORE.forEach((days) => {
+        expanded.push({
+          uid: `${ev.uid}_rem${days}`,
+          title: `Tra ${days} giorni scade: ${ev.title}`,
+          date: DU.addDays(ev.date, -days),
+          description: `Scade il ${DU.formatItShort(ev.date)}.${ev.description ? " " + ev.description : ""}`,
+        });
+      });
+    });
+    return expanded;
+  }
 
   // -----------------------------------------------------------------
   // 1) Esportazione .ics
@@ -57,7 +80,7 @@
   function buildICS(events) {
     const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Scadenzario Studio Legale//IT", "CALSCALE:GREGORIAN"];
     const now = icsDate(new Date());
-    events.forEach((ev) => {
+    withReminderEntries(events).forEach((ev) => {
       const day = icsDate(ev.date);
       lines.push("BEGIN:VEVENT");
       lines.push(foldLine(`UID:${ev.uid}@scadenzario`));
@@ -66,13 +89,6 @@
       lines.push(`DTEND;VALUE=DATE:${day}`);
       lines.push(foldLine(`SUMMARY:${escapeICS(ev.title)}`));
       if (ev.description) lines.push(foldLine(`DESCRIPTION:${escapeICS(ev.description)}`));
-      REMINDER_DAYS_BEFORE.forEach((days) => {
-        lines.push("BEGIN:VALARM");
-        lines.push("ACTION:DISPLAY");
-        lines.push(`DESCRIPTION:Promemoria scadenza — ${days} giorni prima`);
-        lines.push(`TRIGGER:-P${days}D`);
-        lines.push("END:VALARM");
-      });
       lines.push("END:VEVENT");
     });
     lines.push("END:VCALENDAR");
@@ -103,9 +119,10 @@
   async function pushEventsToGoogleCalendar(events, onProgress) {
     const token = await global.GoogleAuth.ensureToken();
     const calendarId = encodeURIComponent((global.CALENDAR_CONFIG && global.CALENDAR_CONFIG.googleCalendarId) || "primary");
+    const expanded = withReminderEntries(events);
     const results = [];
-    for (let i = 0; i < events.length; i++) {
-      const ev = events[i];
+    for (let i = 0; i < expanded.length; i++) {
+      const ev = expanded[i];
       const day = DU.toISO(ev.date);
       const nextDay = DU.toISO(DU.addDays(ev.date, 1));
       const body = {
@@ -113,10 +130,7 @@
         description: ev.description || "",
         start: { date: day },
         end: { date: nextDay },
-        reminders: {
-          useDefault: false,
-          overrides: REMINDER_DAYS_BEFORE.map((days) => ({ method: "popup", minutes: days * 24 * 60 })),
-        },
+        reminders: { useDefault: false, overrides: [] },
       };
       try {
         const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`, {
@@ -135,7 +149,7 @@
       } catch (e) {
         results.push({ ok: false, event: ev, error: e.message });
       }
-      if (onProgress) onProgress(i + 1, events.length);
+      if (onProgress) onProgress(i + 1, expanded.length);
     }
     return results;
   }
