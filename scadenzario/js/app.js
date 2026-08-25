@@ -25,6 +25,9 @@
   const elPraticheList = document.getElementById("pratiche-list");
   const elEmptyState = document.getElementById("empty-state");
   const elSearch = document.getElementById("f-search");
+  const elNascondiFatte = document.getElementById("f-nascondi-fatte");
+  const elRiepilogoBody = document.getElementById("riepilogo-body");
+  const elRiepilogoEmpty = document.getElementById("riepilogo-empty");
   const elGoogleStatus = document.getElementById("google-status");
 
   let currentPreviewItems = null;
@@ -192,7 +195,7 @@
     elDynamicFields.innerHTML = "";
     elPreviewResult.hidden = true;
     currentPreviewItems = null;
-    renderPratiche();
+    renderAll();
   });
 
   // ---------------------------------------------------------------
@@ -310,7 +313,79 @@
     });
   }
 
-  elSearch.addEventListener("input", renderPratiche);
+  function renderAll() {
+    renderPratiche();
+    renderRiepilogo();
+  }
+
+  function toggleDone(praticaId, label, checked) {
+    const pratica = Store.get(praticaId);
+    if (!pratica) return;
+    const completate = Object.assign({}, pratica.completate);
+    if (checked) completate[label] = true;
+    else delete completate[label];
+    Store.update(praticaId, { completate });
+    renderAll();
+  }
+
+  // ---------------------------------------------------------------
+  // Riepilogo: tutte le scadenze di tutte le pratiche, in un'unica
+  // tabella ordinata per data.
+  // ---------------------------------------------------------------
+  function renderRiepilogo() {
+    const all = Store.loadAll();
+    const query = (elSearch.value || "").trim().toLowerCase();
+    const nascondiFatte = elNascondiFatte.checked;
+    const today = DU.toDate(new Date());
+    const soonThreshold = DU.addDays(today, 7);
+
+    let rows = [];
+    all.forEach((pratica) => {
+      if (query && !(pratica.cliente || "").toLowerCase().includes(query) && !(pratica.oggetto || "").toLowerCase().includes(query)) return;
+      const rito = RITI[pratica.ritoKey];
+      const sottotipo = rito && rito.sottotipi[pratica.sottotipoKey];
+      computeItemsForPratica(pratica).forEach((it) => {
+        const isDone = !!(pratica.completate && pratica.completate[it.label]);
+        if (nascondiFatte && isDone) return;
+        rows.push({ pratica, item: it, isDone, ritoLabel: (rito && rito.label) || pratica.ritoKey, sottotipoLabel: (sottotipo && sottotipo.label) || pratica.sottotipoKey });
+      });
+    });
+    rows.sort((a, b) => a.item.date - b.item.date);
+
+    elRiepilogoEmpty.hidden = rows.length > 0;
+    elRiepilogoBody.innerHTML = rows
+      .map(({ pratica, item: it, isDone, ritoLabel, sottotipoLabel }) => {
+        let statusClass = "";
+        if (isDone) statusClass = "done";
+        else if (it.date < today) statusClass = "overdue";
+        else if (it.date <= soonThreshold) statusClass = "soon";
+        return `
+        <tr class="${statusClass}">
+          <td class="rp-date">${DU.formatItShort(it.date)}</td>
+          <td>${escapeHTML(pratica.cliente)}</td>
+          <td>
+            <div>${escapeHTML(pratica.oggetto || "—")}</div>
+            <div class="rp-oggetto">${escapeHTML(ritoLabel)} · ${escapeHTML(sottotipoLabel)}</div>
+          </td>
+          <td>
+            <div class="rp-label">${escapeHTML(it.label)}</div>
+            ${it.art ? `<div class="rp-art">${escapeHTML(it.art)}</div>` : ""}
+          </td>
+          <td><span class="d-cat">${CATEGORY_LABELS[it.category] || it.category}</span></td>
+          <td class="rp-check"><input type="checkbox" data-toggle-done data-pratica="${pratica.id}" data-label="${escapeHTML(it.label)}" ${isDone ? "checked" : ""} aria-label="Segna come fatto" /></td>
+        </tr>`;
+      })
+      .join("");
+  }
+
+  elRiepilogoBody.addEventListener("change", (e) => {
+    const toggle = e.target.closest("[data-toggle-done]");
+    if (!toggle) return;
+    toggleDone(toggle.dataset.pratica, toggle.dataset.label, toggle.checked);
+  });
+
+  elSearch.addEventListener("input", renderAll);
+  elNascondiFatte.addEventListener("change", renderRiepilogo);
 
   elPraticheList.addEventListener("click", (e) => {
     const toggleId = e.target.closest("[data-toggle-card]");
@@ -325,7 +400,7 @@
     if (del) {
       if (confirm("Eliminare definitivamente questa pratica e le sue scadenze?")) {
         Store.remove(del.dataset.deletePratica);
-        renderPratiche();
+        renderAll();
       }
       return;
     }
@@ -357,13 +432,7 @@
   elPraticheList.addEventListener("change", (e) => {
     const toggle = e.target.closest("[data-toggle-done]");
     if (!toggle) return;
-    const pratica = Store.get(toggle.dataset.pratica);
-    if (!pratica) return;
-    const completate = Object.assign({}, pratica.completate);
-    if (toggle.checked) completate[toggle.dataset.label] = true;
-    else delete completate[toggle.dataset.label];
-    Store.update(pratica.id, { completate });
-    renderPratiche();
+    toggleDone(toggle.dataset.pratica, toggle.dataset.label, toggle.checked);
   });
 
   function slug(s) {
@@ -481,7 +550,7 @@
       try {
         const added = Store.importJSON(reader.result, { merge: true });
         alert(`Importazione completata: ${added} pratiche aggiunte.`);
-        renderPratiche();
+        renderAll();
       } catch (err) {
         alert("File di backup non valido: " + err.message);
       }
@@ -492,5 +561,5 @@
 
   // ---------------------------------------------------------------
   refreshGoogleStatus();
-  renderPratiche();
+  renderAll();
 })();

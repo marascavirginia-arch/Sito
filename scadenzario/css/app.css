@@ -168,6 +168,25 @@ input[type="checkbox"] { width: 18px; height: 18px; }
 .deadline-item.done .d-label { text-decoration: line-through; }
 .deadline-item .d-check { justify-self: end; display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--ink-soft); }
 
+.riepilogo-filters { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.filter-check { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; }
+
+.table-scroll { overflow-x: auto; }
+.riepilogo-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.riepilogo-table th, .riepilogo-table td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.riepilogo-table thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); font-weight: 600; border-bottom: 2px solid var(--line); white-space: nowrap; }
+.riepilogo-table tbody tr:hover { background: var(--ivory-warm); }
+.riepilogo-table .rp-date { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.riepilogo-table .rp-oggetto { color: var(--ink-soft); font-size: 0.82rem; }
+.riepilogo-table .rp-art { color: var(--ink-soft); font-size: 0.78rem; margin-top: 2px; }
+.riepilogo-table .rp-check { text-align: center; }
+.riepilogo-table tr.overdue .rp-date { color: var(--danger); }
+.riepilogo-table tr.overdue { background: var(--danger-bg); }
+.riepilogo-table tr.soon .rp-date { color: var(--warn); }
+.riepilogo-table tr.soon { background: var(--warn-bg); }
+.riepilogo-table tr.done { opacity: 0.5; }
+.riepilogo-table tr.done .rp-label { text-decoration: line-through; }
+
 .pratiche-list { display: flex; flex-direction: column; gap: 14px; }
 .empty-state { color: var(--ink-soft); font-style: italic; }
 

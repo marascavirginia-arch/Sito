@@ -91,11 +91,37 @@
     <p class="google-status" id="google-status"></p>
   </section>
 
+  <!-- RIEPILOGO SCADENZE -->
+  <section class="panel">
+    <div class="panel-head-row">
+      <h2>Riepilogo scadenze</h2>
+      <div class="riepilogo-filters">
+        <input type="search" id="f-search" placeholder="Cerca per cliente o oggetto…" class="search-input" />
+        <label class="filter-check"><input type="checkbox" id="f-nascondi-fatte" /> Nascondi completate</label>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table class="riepilogo-table" id="riepilogo-table">
+        <thead>
+          <tr>
+            <th scope="col">Data</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Pratica</th>
+            <th scope="col">Adempimento</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Fatto</th>
+          </tr>
+        </thead>
+        <tbody id="riepilogo-body"></tbody>
+      </table>
+    </div>
+    <p class="empty-state" id="riepilogo-empty" hidden>Nessuna scadenza da riepilogare: aggiungi una pratica qui sopra.</p>
+  </section>
+
   <!-- ELENCO PRATICHE -->
   <section class="panel">
     <div class="panel-head-row">
       <h2>Pratiche</h2>
-      <input type="search" id="f-search" placeholder="Cerca per cliente o oggetto…" class="search-input" />
     </div>
     <div id="pratiche-list" class="pratiche-list">
       <p class="empty-state" id="empty-state">Nessuna pratica salvata. Compila il modulo qui sopra per aggiungerne una.</p>
