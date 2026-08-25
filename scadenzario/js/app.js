@@ -7,6 +7,7 @@
   const RITI = window.RITI;
   const Store = window.Store;
   const Cal = window.CalendarSync;
+  const Drive = window.DriveSync;
 
   const CATEGORY_LABELS = {
     introduzione: "Introduzione",
@@ -31,6 +32,9 @@
   const elRegistroBody = document.getElementById("registro-body");
   const elRegistroEmpty = document.getElementById("registro-empty");
   const elGoogleStatus = document.getElementById("google-status");
+  const elDriveSyncBtn = document.getElementById("btn-drive-sync");
+  const elDriveDisconnectBtn = document.getElementById("btn-drive-disconnect");
+  const elDriveStatus = document.getElementById("drive-status");
 
   let currentPreviewItems = null;
   const noteSaveTimers = {};
@@ -563,6 +567,67 @@
     }
   }
 
+  // ---------------------------------------------------------------
+  // Sincronizzazione pratiche su Google Drive (tra dispositivi)
+  // ---------------------------------------------------------------
+  function refreshDriveUI() {
+    if (!Drive || !Drive.isConfigured()) {
+      elDriveSyncBtn.disabled = true;
+      elDriveDisconnectBtn.hidden = true;
+      elDriveStatus.textContent =
+        "Non configurata: serve un Client ID Google in js/calendar-config.js (lo stesso usato per Google Calendar) — vedi README.";
+      return;
+    }
+    elDriveSyncBtn.disabled = false;
+    if (Drive.isConnected()) {
+      elDriveSyncBtn.textContent = "Sincronizza ora";
+      elDriveDisconnectBtn.hidden = false;
+    } else {
+      elDriveSyncBtn.textContent = "Sincronizza pratiche con Google";
+      elDriveDisconnectBtn.hidden = true;
+      elDriveStatus.textContent = "Non connesso: le pratiche restano solo su questo dispositivo.";
+    }
+  }
+
+  if (Drive) {
+    Drive.onStatus(({ state, message, email }) => {
+      if (state === "syncing") {
+        elDriveStatus.textContent = message || "Sincronizzazione in corso…";
+      } else if (state === "synced") {
+        elDriveStatus.textContent = email ? `Sincronizzato — connesso come ${email}.` : "Sincronizzato.";
+        renderAll();
+      } else if (state === "error") {
+        elDriveStatus.textContent = message || "Errore di sincronizzazione.";
+      } else {
+        elDriveStatus.textContent = message || "";
+      }
+      refreshDriveUI();
+    });
+
+    elDriveSyncBtn.addEventListener("click", async () => {
+      elDriveSyncBtn.disabled = true;
+      try {
+        if (Drive.isConnected()) {
+          await Drive.syncNow({ interactive: true });
+        } else {
+          await Drive.connect();
+        }
+      } catch (e) {
+        elDriveStatus.textContent = e.message || "Sincronizzazione non riuscita.";
+      } finally {
+        elDriveSyncBtn.disabled = false;
+        refreshDriveUI();
+      }
+    });
+
+    elDriveDisconnectBtn.addEventListener("click", () => {
+      if (confirm("Disconnettere questo dispositivo dalla sincronizzazione? Le pratiche già salvate qui restano, ma non si aggiorneranno più da Google Drive.")) {
+        Drive.disconnect();
+        refreshDriveUI();
+      }
+    });
+  }
+
   async function syncPraticaToGoogle(pratica, btn) {
     if (!Cal.isConfigured()) {
       alert("Configura prima js/calendar-config.js con il tuo Google Client ID (vedi README in scadenzario/).");
@@ -666,5 +731,7 @@
 
   // ---------------------------------------------------------------
   refreshGoogleStatus();
+  refreshDriveUI();
   renderAll();
+  if (Drive) Drive.tryAutoConnect();
 })();

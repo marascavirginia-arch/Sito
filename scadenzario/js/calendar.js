@@ -88,68 +88,15 @@
   }
 
   // -----------------------------------------------------------------
-  // 2) Sincronizzazione diretta via Google Calendar API (OAuth GIS)
+  // 2) Sincronizzazione diretta via Google Calendar API (login condiviso
+  //    con la sincronizzazione su Drive — vedi google-auth.js)
   // -----------------------------------------------------------------
-  const SCOPE = "https://www.googleapis.com/auth/calendar.events";
-  let gisLoaded = false;
-  let tokenClient = null;
-  let accessToken = null;
-
   function isConfigured() {
-    return !!(global.CALENDAR_CONFIG && global.CALENDAR_CONFIG.googleClientId);
-  }
-
-  function loadGisScript() {
-    return new Promise((resolve, reject) => {
-      if (gisLoaded && global.google && global.google.accounts) return resolve();
-      const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        gisLoaded = true;
-        resolve();
-      };
-      script.onerror = () => reject(new Error("Impossibile caricare Google Identity Services."));
-      document.head.appendChild(script);
-    });
-  }
-
-  function ensureToken() {
-    return new Promise((resolve, reject) => {
-      if (!isConfigured()) {
-        reject(new Error("Google Calendar non configurato: imposta googleClientId in js/calendar-config.js."));
-        return;
-      }
-      loadGisScript()
-        .then(() => {
-          if (accessToken) {
-            resolve(accessToken);
-            return;
-          }
-          if (!tokenClient) {
-            tokenClient = global.google.accounts.oauth2.initTokenClient({
-              client_id: global.CALENDAR_CONFIG.googleClientId,
-              scope: SCOPE,
-              callback: () => {}, // sovrascritto ad ogni richiesta
-            });
-          }
-          tokenClient.callback = (resp) => {
-            if (resp.error) {
-              reject(new Error("Autorizzazione Google negata o annullata."));
-              return;
-            }
-            accessToken = resp.access_token;
-            resolve(accessToken);
-          };
-          tokenClient.requestAccessToken({ prompt: accessToken ? "" : "consent" });
-        })
-        .catch(reject);
-    });
+    return global.GoogleAuth ? global.GoogleAuth.isConfigured() : false;
   }
 
   async function pushEventsToGoogleCalendar(events, onProgress) {
-    const token = await ensureToken();
+    const token = await global.GoogleAuth.ensureToken();
     const calendarId = encodeURIComponent((global.CALENDAR_CONFIG && global.CALENDAR_CONFIG.googleCalendarId) || "primary");
     const results = [];
     for (let i = 0; i < events.length; i++) {
@@ -185,18 +132,10 @@
     return results;
   }
 
-  function signOut() {
-    if (accessToken && global.google && global.google.accounts) {
-      global.google.accounts.oauth2.revoke(accessToken, () => {});
-    }
-    accessToken = null;
-  }
-
   global.CalendarSync = {
     buildICS,
     downloadICS,
     isConfigured,
     pushEventsToGoogleCalendar,
-    signOut,
   };
 })(window);

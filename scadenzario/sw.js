@@ -7,7 +7,7 @@
  * Per pubblicare un aggiornamento dell'app, incrementare CACHE_NAME:
  * forza i client a scaricare la nuova versione dei file.
  */
-const CACHE_NAME = "scadenzario-v2";
+const CACHE_NAME = "scadenzario-v3";
 const APP_SHELL = [
   "./index.html",
   "./manifest.webmanifest",
@@ -18,7 +18,9 @@ const APP_SHELL = [
   "./js/date-utils.js",
   "./js/riti.js",
   "./js/store.js",
+  "./js/google-auth.js",
   "./js/calendar.js",
+  "./js/drive-sync.js",
   "./js/app.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",

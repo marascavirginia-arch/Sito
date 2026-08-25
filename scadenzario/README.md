@@ -1,8 +1,7 @@
 # Scadenzario — gestione scadenze pratiche
 
-Strumento interno (non collegato al sito pubblico se non tramite un link
-discreto in fondo alla home) per tenere sotto controllo le scadenze
-processuali delle pratiche dello studio.
+Strumento interno (non collegato al sito pubblico dello studio) per
+tenere sotto controllo le scadenze processuali delle pratiche.
 
 Apri `scadenzario/index.html` (con un server statico, vedi il README
 principale, oppure direttamente tramite l'URL pubblicato con GitHub Pages,
@@ -47,9 +46,11 @@ browser/dispositivo — usa "Backup (.json)" per portarli su un altro.
    scadenze **scadute** (rosso) e **imminenti entro 7 giorni** (ambra), e
    si possono spuntare come completate.
 4. I dati (clienti, pratiche, scadenze) restano **salvati solo nel
-   browser** (localStorage) di chi usa l'app — non c'è un server. Usa il
-   pulsante **"Backup (.json)"** per esportare/importare i dati, ad
-   esempio per passare da un computer a un altro.
+   browser** (localStorage) di chi usa l'app — non c'è un server
+   obbligatorio. Usa il pulsante **"Backup (.json)"** per esportare/
+   importare i dati manualmente tra un dispositivo e l'altro, oppure
+   attiva la **sincronizzazione automatica su Google Drive** (vedi sotto)
+   per vederli aggiornati da soli su telefono e computer.
 
 > **Importante**: le date calcolate sono un supporto, non un parere
 > legale. Vanno sempre verificate con il fascicolo e la prassi del
@@ -77,16 +78,20 @@ in Google Calendar:
 Con questa modalità il pulsante **"Sincronizza con Google Calendar"**
 crea gli eventi direttamente nel calendario Google, senza scaricare né
 importare nulla. Richiede di creare, una tantum, un **OAuth Client ID**
-gratuito su Google Cloud:
+gratuito su Google Cloud — **lo stesso Client ID serve anche per la
+sincronizzazione delle pratiche tra dispositivi** (vedi sezione
+successiva): un'unica configurazione abilita entrambe le funzioni.
 
 1. Vai su [console.cloud.google.com](https://console.cloud.google.com/)
    e crea un nuovo progetto (o usane uno esistente).
-2. **API e servizi → Libreria**: cerca **"Google Calendar API"** e
-   attivala per il progetto.
+2. **API e servizi → Libreria**: cerca **"Google Calendar API"**,
+   attivala; ripeti la ricerca per **"Google Drive API"** e attiva anche
+   quella (serve per la sincronizzazione delle pratiche).
 3. **API e servizi → Schermata di consenso OAuth**: tipo *Esterno*,
    compila i campi obbligatori (nome app, email); non serve la verifica
    di Google per un uso interno con pochi utenti — aggiungi la tua email
-   come "utente di test" se l'app resta in modalità test.
+   (e quella di chiunque altro userà l'app) come "utente di test" se
+   l'app resta in modalità test.
 4. **API e servizi → Credenziali → Crea credenziali → ID client OAuth**:
    - Tipo applicazione: **Applicazione web**.
    - **Origini JavaScript autorizzate**: l'indirizzo da cui apri l'app,
@@ -103,27 +108,66 @@ gratuito su Google Cloud:
    };
    ```
 
-6. Ricarica la pagina: il pulsante di sincronizzazione diventa attivo.
-   Al primo utilizzo Google chiederà di accedere e autorizzare l'app a
-   creare eventi sul calendario (permesso limitato alla creazione di
-   eventi, non alla lettura degli altri dati dell'account).
+6. Ricarica la pagina: i pulsanti di sincronizzazione diventano attivi.
+   Al primo utilizzo Google chiederà di accedere e autorizzare l'app;
+   un'unica autorizzazione copre sia la creazione di eventi sul
+   calendario sia la sincronizzazione delle pratiche su Drive (nessun
+   altro dato dell'account viene letto).
 
 Finché `googleClientId` resta vuoto, resta disponibile solo
 l'esportazione `.ics`, che è sufficiente per un uso quotidiano senza
 configurazioni aggiuntive.
 
+## Sincronizzare le pratiche tra dispositivi (Google Drive)
+
+Per vedere le stesse pratiche su telefono e computer senza esportare e
+importare backup a mano, l'app può salvarle in un file nascosto nel
+Google Drive dell'utente (`pratiche.json`, in una cartella dati-app
+invisibile nel Drive normale — non l'intero Drive, solo quel file).
+
+Richiede lo stesso Client ID OAuth descritto sopra (con anche la
+**Google Drive API** attivata). Una volta configurato:
+
+1. Apri l'app, pannello **"Sincronizzazione tra dispositivi"** → tocca
+   **"Sincronizza pratiche con Google"**.
+2. Accedi con l'account Google da usare per tutti i dispositivi.
+3. Ripeti sullo stesso account su ogni altro dispositivo (telefono, PC):
+   la prima sincronizzazione unisce le pratiche già presenti su
+   ciascuno, poi restano aggiornate da sole a ogni modifica.
+
+Dettagli pratici:
+
+- Il pulsante diventa **"Sincronizza ora"** una volta connessi: usalo se
+  vuoi forzare un aggiornamento immediato (in automatico, l'app prova
+  comunque a sincronizzarsi da sola all'apertura e dopo ogni modifica).
+- Se la stessa pratica viene modificata su due dispositivi prima che si
+  sincronizzino, vince la modifica più recente (non un'unione dei
+  singoli campi).
+- Le **cancellazioni** di pratiche non sono garantite propagarsi a un
+  dispositivo che, al momento della cancellazione, non era ancora stato
+  sincronizzato: limite noto di questa prima versione.
+- **"Disconnetti questo dispositivo"** ferma la sincronizzazione solo
+  localmente: le pratiche già scaricate restano su quel dispositivo, ma
+  smettono di aggiornarsi.
+
 ## Struttura dei file
 
 ```
 scadenzario/
-  index.html          Pagina dell'app
-  css/app.css          Stili (riusa la palette del sito principale)
-  js/date-utils.js      Calcolo date: giorni liberi, festivi, sospensione feriale
-  js/riti.js            Regole dei riti civile/amministrativo/tributario
-  js/store.js           Salvataggio pratiche in localStorage
-  js/calendar.js         Esportazione .ics + sincronizzazione Google Calendar
-  js/calendar-config.js  Client ID Google (da configurare, vedi sopra)
-  js/app.js              Interfaccia: form, elenco pratiche, azioni
+  index.html            Pagina dell'app
+  manifest.webmanifest  Manifest PWA (icona/installazione)
+  sw.js                 Service worker (cache offline dell'app)
+  css/app.css            Stili (riusa la palette del sito principale)
+  js/auth-config.js      Hash della password di accesso all'app
+  js/auth.js             Overlay "Accesso riservato"
+  js/date-utils.js       Calcolo date: giorni liberi, festivi, sospensione feriale
+  js/riti.js             Regole dei riti civile/amministrativo/tributario
+  js/store.js            Salvataggio pratiche in localStorage + merge per la sincronizzazione
+  js/google-auth.js      Login Google condiviso (Calendar + Drive)
+  js/calendar.js          Esportazione .ics + sincronizzazione Google Calendar
+  js/calendar-config.js   Client ID Google (da configurare, vedi sopra)
+  js/drive-sync.js        Sincronizzazione pratiche su Google Drive tra dispositivi
+  js/app.js               Interfaccia: form, elenco pratiche, azioni
 ```
 
 ## Estendere le regole dei riti

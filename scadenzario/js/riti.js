@@ -17,7 +17,7 @@
   const DU = global.DateUtils;
 
   function item(label, date, art, note, category) {
-    if (!date) return null;
+    if (!date || !DU.isValidDate(date)) return null;
     return { label, date, art: art || "", note: note || "", category: category || "merito" };
   }
 

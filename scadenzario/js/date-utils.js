@@ -119,19 +119,38 @@
     return day === 0 || day === 6;
   }
 
+  function isValidDate(d) {
+    return d instanceof Date && !isNaN(d.getTime());
+  }
+
   function isNonWorkingDay(date) {
-    return isWeekend(date) || isNationalHoliday(date);
+    const d = toDate(date);
+    // Una data non valida (es. da un campo mancante o corrotto) non va
+    // considerata "festiva": altrimenti nextWorkingDay/previousWorkingDay
+    // non troverebbero mai un giorno lavorativo e resterebbero in loop.
+    if (!isValidDate(d)) return false;
+    return isWeekend(d) || isNationalHoliday(d);
   }
 
   function nextWorkingDay(date) {
     let d = toDate(date);
-    while (isNonWorkingDay(d)) d = addDays(d, 1);
+    if (!isValidDate(d)) return d;
+    let guard = 0;
+    while (isNonWorkingDay(d) && guard < 366) {
+      d = addDays(d, 1);
+      guard++;
+    }
     return d;
   }
 
   function previousWorkingDay(date) {
     let d = toDate(date);
-    while (isNonWorkingDay(d)) d = addDays(d, -1);
+    if (!isValidDate(d)) return d;
+    let guard = 0;
+    while (isNonWorkingDay(d) && guard < 366) {
+      d = addDays(d, -1);
+      guard++;
+    }
     return d;
   }
 
@@ -216,6 +235,7 @@
     isNationalHoliday,
     isWeekend,
     isNonWorkingDay,
+    isValidDate,
     nextWorkingDay,
     previousWorkingDay,
     applySospensioneFeriale,
