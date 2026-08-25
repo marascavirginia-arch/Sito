@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scadenzario — Gestione Scadenze Pratiche</title>
+<meta name="description" content="Gestione delle scadenze processuali dello studio: calcolo automatico dei termini per rito civile, amministrativo e tributario, con sincronizzazione su Google Calendar." />
+<meta name="robots" content="noindex, nofollow" />
+
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-container app-header-inner">
+    <a href="../index.html" class="app-back">&larr; Sito</a>
+    <h1>Scadenzario</h1>
+    <span class="app-subtitle">Gestione scadenze pratiche</span>
+  </div>
+</header>
+
+<main class="app-container">
+
+  <div class="disclaimer">
+    <strong>Attenzione:</strong> le date sono calcolate automaticamente in base alle regole generali dei riti civile, amministrativo e tributario (giorni liberi, sospensione feriale, proroga/anticipo per giorni festivi). Verificare sempre i termini con il fascicolo e la prassi del foro/ufficio competente prima di farvi affidamento. I dati restano salvati solo su questo browser/dispositivo: usare il backup per non perderli.
+  </div>
+
+  <!-- NUOVA PRATICA -->
+  <section class="panel" id="panel-nuova">
+    <h2>Nuova pratica</h2>
+    <form id="form-pratica" autocomplete="off">
+      <div class="field-row">
+        <div class="field">
+          <label for="f-cliente">Cliente</label>
+          <input type="text" id="f-cliente" placeholder="Es. Mario Rossi" required />
+        </div>
+        <div class="field">
+          <label for="f-oggetto">Oggetto della pratica</label>
+          <input type="text" id="f-oggetto" placeholder="Es. Responsabilità civile — citazione ricevuta" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-rito">Rito</label>
+          <select id="f-rito" required>
+            <option value="">Seleziona…</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-sottotipo">Tipo di procedimento</label>
+          <select id="f-sottotipo" required disabled>
+            <option value="">Seleziona prima il rito…</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row" id="dynamic-fields"></div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Calcola scadenze</button>
+      </div>
+    </form>
+
+    <div id="preview-result" class="preview-result" hidden>
+      <h3>Scadenze calcolate</h3>
+      <ul id="preview-list" class="deadline-list"></ul>
+      <div class="form-actions">
+        <button type="button" id="btn-salva-pratica" class="btn btn-gold">Salva pratica</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- AZIONI GLOBALI -->
+  <section class="panel panel-toolbar">
+    <div class="toolbar">
+      <button type="button" id="btn-export-all-ics" class="btn btn-outline">Esporta tutte le scadenze (.ics)</button>
+      <button type="button" id="btn-sync-all-google" class="btn btn-outline">Sincronizza tutto con Google Calendar</button>
+      <button type="button" id="btn-export-backup" class="btn btn-ghost">Backup (.json)</button>
+      <label class="btn btn-ghost file-btn">
+        Importa backup
+        <input type="file" id="input-import-backup" accept="application/json" hidden />
+      </label>
+    </div>
+    <p class="google-status" id="google-status"></p>
+  </section>
+
+  <!-- ELENCO PRATICHE -->
+  <section class="panel">
+    <div class="panel-head-row">
+      <h2>Pratiche</h2>
+      <input type="search" id="f-search" placeholder="Cerca per cliente o oggetto…" class="search-input" />
+    </div>
+    <div id="pratiche-list" class="pratiche-list">
+      <p class="empty-state" id="empty-state">Nessuna pratica salvata. Compila il modulo qui sopra per aggiungerne una.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <div class="app-container">
+    <p>Strumento interno di studio — i dati sono salvati localmente nel browser.</p>
+  </div>
+</footer>
+
+<script src="js/calendar-config.js"></script>
+<script src="js/date-utils.js"></script>
+<script src="js/riti.js"></script>
+<script src="js/store.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
