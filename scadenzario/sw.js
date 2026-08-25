@@ -7,7 +7,7 @@
  * Per pubblicare un aggiornamento dell'app, incrementare CACHE_NAME:
  * forza i client a scaricare la nuova versione dei file.
  */
-const CACHE_NAME = "scadenzario-v4";
+const CACHE_NAME = "scadenzario-v5";
 const APP_SHELL = [
   "./index.html",
   "./manifest.webmanifest",
@@ -27,8 +27,17 @@ const APP_SHELL = [
 ];
 
 self.addEventListener("install", (event) => {
+  // Fetch con { cache: "reload" }: scarica sempre dalla rete, ignorando
+  // la cache HTTP del browser — altrimenti cache.addAll() potrebbe
+  // rimettere in cache contenuti già vecchi presi dalla cache HTTP,
+  // vanificando l'aggiornamento a un nuovo CACHE_NAME.
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then((cache) =>
+        Promise.all(APP_SHELL.map((url) => fetch(url, { cache: "reload" }).then((res) => cache.put(url, res))))
+      )
+      .then(() => self.skipWaiting())
   );
 });
 
