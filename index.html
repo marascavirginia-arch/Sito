@@ -14,8 +14,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
 <link rel="stylesheet" href="css/style.css" />
+<style>
+  /* Copertura critica del lock-screen: presente subito, prima ancora
+     che css/style.css finisca di caricare. */
+  #lock-overlay { position: fixed; inset: 0; z-index: 9999; background: #0b1220; display: flex; align-items: center; justify-content: center; padding: 20px; }
+</style>
 </head>
 <body>
+
+<div id="lock-overlay">
+  <form id="lock-form" class="lock-card">
+    <h1 class="lock-title">Simone Petrucci</h1>
+    <p class="lock-lead">Il sito non è ancora pubblico. Inserisci la password per visualizzare l'anteprima.</p>
+    <label for="lock-password">Password</label>
+    <input type="password" id="lock-password" autocomplete="current-password" required />
+    <button type="submit" class="btn btn-gold">Sblocca</button>
+    <p id="lock-error" class="lock-error" hidden></p>
+  </form>
+</div>
+<script src="js/auth-config.js"></script>
+<script src="js/auth.js"></script>
 
 <a class="skip-link" href="#main">Vai al contenuto</a>
 

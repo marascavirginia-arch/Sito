@@ -29,6 +29,37 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
+#lock-overlay {
+  background: radial-gradient(circle at 30% 20%, var(--navy-800), var(--navy-950) 70%);
+}
+.lock-card {
+  width: 100%;
+  max-width: 340px;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lock-title { font-family: var(--font-serif); font-weight: 500; font-size: 1.6rem; margin: 0 0 4px; color: var(--ink); text-align: center; }
+.lock-lead { font-size: 0.85rem; color: var(--ink-soft); text-align: center; margin: 0 0 18px; }
+.lock-card label { font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
+.lock-card input[type="password"] {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ivory-warm);
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.lock-card input[type="password"]:focus { outline: 2px solid var(--gold-light); outline-offset: 1px; }
+.lock-card .btn { width: 100%; }
+.lock-error { color: #a3382f; font-size: 0.85rem; text-align: center; margin: 12px 0 0; }
+
 body {
   margin: 0;
   font-family: var(--font-sans);
