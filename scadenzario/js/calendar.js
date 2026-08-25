@@ -17,6 +17,9 @@
   "use strict";
   const DU = global.DateUtils;
 
+  // Promemoria pop-up: quanti giorni prima di ogni scadenza avvisare.
+  const REMINDER_DAYS_BEFORE = [20, 10, 5];
+
   // -----------------------------------------------------------------
   // 1) Esportazione .ics
   // -----------------------------------------------------------------
@@ -63,11 +66,13 @@
       lines.push(`DTEND;VALUE=DATE:${day}`);
       lines.push(foldLine(`SUMMARY:${escapeICS(ev.title)}`));
       if (ev.description) lines.push(foldLine(`DESCRIPTION:${escapeICS(ev.description)}`));
-      lines.push("BEGIN:VALARM");
-      lines.push("ACTION:DISPLAY");
-      lines.push("DESCRIPTION:Promemoria scadenza");
-      lines.push("TRIGGER:-P1D");
-      lines.push("END:VALARM");
+      REMINDER_DAYS_BEFORE.forEach((days) => {
+        lines.push("BEGIN:VALARM");
+        lines.push("ACTION:DISPLAY");
+        lines.push(`DESCRIPTION:Promemoria scadenza — ${days} giorni prima`);
+        lines.push(`TRIGGER:-P${days}D`);
+        lines.push("END:VALARM");
+      });
       lines.push("END:VEVENT");
     });
     lines.push("END:VCALENDAR");
@@ -108,7 +113,10 @@
         description: ev.description || "",
         start: { date: day },
         end: { date: nextDay },
-        reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 24 * 60 }] },
+        reminders: {
+          useDefault: false,
+          overrides: REMINDER_DAYS_BEFORE.map((days) => ({ method: "popup", minutes: days * 24 * 60 })),
+        },
       };
       try {
         const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`, {

@@ -70,8 +70,8 @@ in Google Calendar:
 1. Vai su [calendar.google.com](https://calendar.google.com) → icona
    ingranaggio → **Impostazioni** → **Importa e esporta** → **Importa**.
 2. Seleziona il file `.ics` scaricato e il calendario di destinazione.
-3. Tutte le scadenze vengono create in un solo passaggio, con un
-   promemoria automatico il giorno prima.
+3. Tutte le scadenze vengono create in un solo passaggio, con
+   promemoria pop-up automatici a **20, 10 e 5 giorni prima**.
 
 ### 2. Sincronizzazione diretta con un click (opzionale)
 
