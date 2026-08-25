@@ -8,6 +8,24 @@ Apri `scadenzario/index.html` (con un server statico, vedi il README
 principale, oppure direttamente tramite l'URL pubblicato con GitHub Pages,
 es. `https://.../Sito/scadenzario/`).
 
+## Installarla come app (icona su telefono/PC)
+
+Lo Scadenzario è una PWA (Progressive Web App): una volta pubblicato online,
+si può "installare" senza App Store, ottenendo un'icona che apre l'app a
+schermo intero come un'app vera. I dati restano comunque salvati solo in
+locale (localStorage), nulla viene inviato a un server.
+
+- **iPhone/iPad (Safari)**: apri il link → icona di condivisione (il
+  quadrato con la freccia) → **"Aggiungi alla schermata Home"**.
+- **Android (Chrome)**: apri il link → menu ⋮ → **"Aggiungi a schermata
+  Home"** (o compare un banner automatico "Installa app").
+- **Mac/Windows (Chrome o Edge)**: apri il link → icona di installazione
+  nella barra degli indirizzi (o menu ⋮ → **"Installa Scadenzario"**).
+
+Da quel momento l'app funziona anche offline (i file dell'app sono in
+cache tramite `sw.js`); i dati delle pratiche restano quelli di quel
+browser/dispositivo — usa "Backup (.json)" per portarli su un altro.
+
 ## Cosa fa
 
 1. Per ogni pratica si inserisce il **cliente**, il **rito** (Civile,
